@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+import os
+import importlib
+
+directories = list(os.walk("."))
+print("Everything: ", directories)
+childDirectories = directories[1] # The 1th item is the list of child dirs
+print("Child directories: ",childDirectories)
+
+textfiles = list()
+for item in directories:
+    if item[0][0:2] == "./":
+        textfiles.extend(item[2])
+print("Text files: ", textfiles)
+
+textfilesWithPaths = list()
+for item in directories:
+    if item[0][0:2] == "./":
+        path = item
+        files = [item[0] + "/" + file for file in item[2]]
+        textfilesWithPaths.extend(files)
+        
+print("Text files with paths: ", textfilesWithPaths)
+
+for file in textfilesWithPaths:
+    os.system("wc " + file)
+
+

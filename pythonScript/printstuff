@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+import os
+import importlib
+
+# dot represents the current directory. os.walk(".") will do a recursive
+# walk of all files and directories beginning and returns a list, which
+# we will print.
+directories = list(os.walk("."))  
+print("Everything: ", directories)
+
+# The 1th item (not the 0th) in that list is the list of subdirectories
+childDirectories = directories[1] # The 1th item is the list of child dirs
+print("Child directories: ",childDirectories)
+
+# Now, let's extract the files that are in children subdirectories.
+# Wed to that by looking for items that begin with ./ since that indicates
+# a subdirectory of the current directory.
+textfiles = list()
+for item in directories:
+    if item[0][0:2] == "./":
+        textfiles.extend(item[2])
+print("Text files: ", textfiles)
+
+# Now, let's do the same thing, but this time collect the files in 
+# subdirectories with their path names prepended.
+textfilesWithPaths = list()
+for item in directories:
+    if item[0][0:2] == "./":
+        path = item
+        files = [item[0] + "/" + file for file in item[2]]
+        textfilesWithPaths.extend(files)
+        
+print("Text files with paths: ", textfilesWithPaths)
+
+# wc is a unix command that stands for "word count".
+# It counts the number of characters, words, lines in a file
+# You can replace wc with other commands.  However, you could also
+# run a python program here by importing it and then executing it here.
+for file in textfilesWithPaths:
+    os.system("wc " + file)
+
+
