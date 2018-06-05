@@ -1,4 +1,8 @@
-# dtldiameter
+# dtldiameter and dtlmedian
+
+This code is from Summers 2017 and 2018.  
+In Summer 2017, Eli Zupke and Andrew Ramirez developed much of this code to implement Jordan Haack's DTL diameter algorithm (see the resulting APBC 2018 paper for more details)
+In Summer 2018, Ramya Ramilingam and Kalani Duran added Melissa Grueter's path-based distance algorithm to compute medoids wrt to path distance.
 
 Note that all of the included code was created using Python 2.7. Users wishing to run these programs on a machine that has a later version of Python may experience several syntax-related errors.
 
