@@ -684,7 +684,77 @@ def compare_median_numbers(file_name, dup_cost, transfer_cost, loss_cost):
     print('(' + str(n_med_recons1) + ' , ' + str(n_med_recons2) + ')')
     return (count,n_med_recons1,n_med_recons2)
 
+# Function to find random medians in the MPR space and return a list of the frequencies of events in them
 
+def generate_event_freq_random_median(file_name,dup_cost,transfer_cost,loss_cost):
+    #Copying code from previous functions so we can calculate similarly useful variable values
+    # First we get reconcile the file to get the host and parasite trees in edge format and the DTL reconciliation graph
+    host,paras,graph,num_recon,best_roots = DTLReconGraph.reconcile(file_name,dup_cost,transfer_cost,loss_cost)
+
+    # We want the trees in vertex format to use as arguments in future functions
+    vhost = Diameter.reformat_tree(host,'hTop')
+    vparas = Diameter.reformat_tree(paras,'pTop') 
+
+    # We also want lists of the vertices of these trees  both in preorder and postorder
+
+    preorder_vhost_nodes = preorder_vertices(vhost[0],vhost[1])
+    preorder_vparas_nodes = preorder_vertices(vparas[0],vparas[1])
+    postorder_vhost_nodes = postorder_vertices(vhost[0],vhost[1])
+    postorder_vparas_nodes = postorder_vertices(vparas[0],vparas[1])
+
+    # Now we get a list of the mapping nodes in the DTL graph, also in both preorder and postorder 
+    mapping_node_list = []
+    for key in graph:
+        mapping_node_list.append(key)
+    preorder_mapping_node_list = mapping_node_sort(preorder_vparas_nodes,preorder_vhost_nodes,mapping_node_list)
+    postorder_mapping_node_list = mapping_node_sort(postorder_vparas_nodes,postorder_vhost_nodes,mapping_node_list)
+
+
+    # Calculating the event scores (normalized and not) to use as arguments in median functions
+    event_scores,count = generate_scores_no_normalizing(preorder_mapping_node_list,graph,vparas[1])
+    event_scores1,count1 = generate_scores(preorder_mapping_node_list,graph,vparas[1])
+
+
+    # Getting the numPlacing table
+    numPlacingTable = construct_numPlacing_table(graph,postorder_vhost_nodes,postorder_vparas_nodes,postorder_mapping_node_list,event_scores,count)
+
+    #Getting the nodeCost table
+    species_distance_table = Diameter.calculate_ancestral_table(vhost[0])
+    nodeCostTable = construct_nodeCost_table(graph,preorder_mapping_node_list,numPlacingTable,vhost[0],postorder_vhost_nodes,species_distance_table)
+    print('Done with getting nodeCostTable')
+    #Using the first median function and storing useful values
+    med_recon_graph1,n_med_recons1,best_roots1 = compute_median(graph,event_scores1,postorder_mapping_node_list,best_roots)
+
+    #Using the second median function and storing useful values
+    med_recon_graph2,n_med_recons2,best_roots2 = compute_median_2(graph,postorder_mapping_node_list,nodeCostTable,best_roots)
+
+    #Remember that eventScores holds the frequency of events in the DTL graph unnormalized, whereas 
+    #eventScores1 has the normalized frequency of events (no. of reconciliations in which the event occurs/total reconciliations in graph)
+    # Can use count_mprs function to get no. of MPRs spawned below a given event node.
+
+    med_counts1 = dict()
+    for root in best_roots1:
+        count_mprs(root, med_recon_graph1, med_counts1)
+
+    med_counts2 = dict()
+    for root in best_roots2:
+        count_mprs(root, med_recon_graph2, med_counts2)
+
+    random_median1 = choose_random_median_wrapper(med_recon_graph1, best_roots1, med_counts1)
+    random_median2 = choose_random_median_wrapper(med_recon_graph2, best_roots2, med_counts2)
+
+    freq_scores1 = list()
+    freq_scores2 = list()
+    # I'm not sure if doing the following repeats events because some of the mapping nodes may have the same events - or not?
+    for mapping_node in random_median1:
+        for event in random_median1[mapping_node]:
+            freq_scores1.append(event_scores1[event]) #event_scores1 is a dictionary storing normalized frequencies for all the events in the reconciliation graph, which is the same for both median types
+    
+    for mapping_node in random_median2:
+        for event in random_median2[mapping_node]:
+            freq_scores2.append(event_scores1[event]) # ditto
+    
+    return freq_scores1,freq_scores2
 
 
 
