@@ -122,7 +122,11 @@ def generate_scores(preorder_mapping_node_list, dtl_recon_graph, gene_root):
     # Normalize all of the event_scores
     for mapping_node in preorder_mapping_node_list:
         for event in dtl_recon_graph[mapping_node]:
-                event_scores[event] = event_scores[event] / float(count)
+            if event == ('C',(None,None),(None,None):           #we don't serve your kind around here
+                continue
+            event_scores[event] = event_scores[event] / float(count)
+    
+    event_scores[('C',(None,None),(None,None))] = event_scores[('C',(None,None),(None,None))]/float(count)
 
     return event_scores, count
 
@@ -755,6 +759,37 @@ def generate_event_freq_random_median(file_name,dup_cost,transfer_cost,loss_cost
             freq_scores2.append(event_scores1[event]) # ditto
     
     return freq_scores1,freq_scores2
+
+def test_event_freq(filename, dup_cost, transfer_cost, loss_cost):
+    host, paras, graph, num_recon, best_roots = DTLReconGraph.reconcile(filename, dup_cost, transfer_cost, loss_cost)
+
+    vhost = Diameter.reformat_tree(host, 'hTop')
+    vparas = Diameter.reformat_tree(paras, 'pTop')
+
+    preorder_vhost_nodes = preorder_vertices(vhost[0],vhost[1])
+    preorder_vparas_nodes = preorder_vertices(vparas[0],vparas[1])
+    postorder_vhost_nodes = postorder_vertices(vhost[0],vhost[1])
+    postorder_vparas_nodes = postorder_vertices(vparas[0],vparas[1])
+
+    mapping_node_list = []
+    for key in graph:  #graph = DTL reconciliation graph
+        mapping_node_list.append(key)
+
+    preorder_mapping_node_list = mapping_node_sort(preorder_vparas_nodes,preorder_vhost_nodes,mapping_node_list)
+    postorder_mapping_node_list = mapping_node_sort(postorder_vparas_nodes,postorder_vhost_nodes,mapping_node_list)
+
+    event_scores, count = generate_scores_no_normalizing(preorder_mapping_node_list,graph,vparas[1])
+    event_scores1, count1 = generate_scores(preorder_mapping_node_list,graph,vparas[1])
+
+    #numPlacingTable = construct_numPlacing_table(graph,postorder_vhost_nodes,postorder_vparas_nodes,postorder_mapping_node_list,event_scores,count)
+
+    #species_distance_table = Diameter.calculate_ancestral_table(vhost[0])
+
+    #nodeCostTable = construct_nodeCost_table(graph, preorder_mapping_node_list, numPlacingTable, vhost[0], postorder_vhost_nodes, species_distance_table)
+
+    med_recon_graph1,n_med_recons1,best_roots1 = compute_median(graph, event_scores1, postorder_mapping_node_list, best_roots)
+
+    return event_scores, event_scores1, best_roots, graph
 
 
 
