@@ -745,13 +745,17 @@ def generate_event_freq_random_median(file_name,dup_cost,transfer_cost,loss_cost
 
     freq_scores1 = list()
     freq_scores2 = list()
-    # I'm not sure if doing the following repeats events because some of the mapping nodes may have the same events - or not?
+
     for mapping_node in random_median1:
         for event in random_median1[mapping_node]:
+            if event == ('C',(None,None),(None,None)):
+                continue
             freq_scores1.append(event_scores1[event]) #event_scores1 is a dictionary storing normalized frequencies for all the events in the reconciliation graph, which is the same for both median types
     
     for mapping_node in random_median2:
         for event in random_median2[mapping_node]:
+            if event == ('C',(None,None),(None,None)):
+                continue
             freq_scores2.append(event_scores1[event]) # ditto
     
     return freq_scores1,freq_scores2
