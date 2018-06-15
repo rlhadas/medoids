@@ -32,6 +32,8 @@ from operator import itemgetter
 import numpy as np
 import DTLReconGraph
 import Diameter
+import csv
+import os
 
 
 
@@ -122,7 +124,7 @@ def generate_scores(preorder_mapping_node_list, dtl_recon_graph, gene_root):
     # Normalize all of the event_scores
     for mapping_node in preorder_mapping_node_list:
         for event in dtl_recon_graph[mapping_node]:
-            if event == ('C',(None,None),(None,None):           #we don't serve your kind around here
+            if event == ('C',(None,None),(None,None)):           #we don't serve your kind around here
                 continue
             event_scores[event] = event_scores[event] / float(count)
     
@@ -889,3 +891,198 @@ def main():
 if __name__ == '__main__':
 
     main()
+
+def interpretData():
+    """
+    :param filename: csv file containing the event frequencies from a TreeLife.newick file
+    
+    :return: means of each of averages, minimums, and maximums
+    """
+    #First we find all the csv files that we are to interpret
+    directories = list(os.walk("."))
+    textfilesWithPaths = list()
+
+    #find all text files with their paths prepended
+    textfilesWithPaths = list()
+    for item in directories:
+        if item[0][0:2] == "./":
+            path = item
+            files = [item[0] + "/" + file for file in item[2]]
+            textfilesWithPaths.extend(files)
+    
+    #only take files ending in "***_*.csv"
+    symmetric111TestFiles = list(filter(lambda x: x[-9:] == '111_s.csv', textfilesWithPaths))
+    path111TestFiles = list(filter(lambda x: x[-9:] == '111_p.csv', textfilesWithPaths))
+    symmetric231TestFiles = list(filter(lambda x: x[-9:] == '231_s.csv', textfilesWithPaths))
+    path231TestFiles = list(filter(lambda x: x[-9:] == '231_p.csv', textfilesWithPaths))
+    
+
+    #Write csv files for each subdivision of csv inputs
+    #Symmetric 111
+    with open('Symmetric_111.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+
+        for file in symmetric111TestFiles:
+            #First we read the csv file and initialize rows
+            rows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    rows.append(row)
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += float(rows[i][j])
+                    numColumns[i] += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+ 
+    #Path 111
+    with open('Path_111.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+
+        for file in path111TestFiles:
+            #First we read the csv file and initialize rows
+            rows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    rows.append(row)
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += float(rows[i][j])
+                    numColumns[i] += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+
+    #Symmetric 231
+    with open('Symmetric_231.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+
+        for file in symmetric231TestFiles:
+            #First we read the csv file and initialize rows
+            rows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    rows.append(row)
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += float(rows[i][j])
+                    numColumns[i] += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+ 
+    #Path 231
+    with open('Path_231.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+
+        for file in path231TestFiles:
+            #First we read the csv file and initialize rows
+            rows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    rows.append(row)
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += float(rows[i][j])
+                    numColumns[i] += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+ 
