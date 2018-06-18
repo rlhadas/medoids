@@ -921,7 +921,7 @@ def interpretData():
     #Symmetric 111
     with open('Symmetric_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
 
         for file in symmetric111TestFiles:
             #First we read the csv file and initialize rows
@@ -939,6 +939,7 @@ def interpretData():
             numColumns = [0]*numRows
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
@@ -951,19 +952,21 @@ def interpretData():
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
                 rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
 
             #Next we find the mean of the averages, the minimums, and the maximums
             meanOfAverages = sum(rowAverages)/numRows
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
  
     #Path 111
     with open('Path_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
 
         for file in path111TestFiles:
             #First we read the csv file and initialize rows
@@ -981,6 +984,7 @@ def interpretData():
             numColumns = [0]*numRows
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
@@ -993,19 +997,21 @@ def interpretData():
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
                 rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
 
             #Next we find the mean of the averages, the minimums, and the maximums
             meanOfAverages = sum(rowAverages)/numRows
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
 
     #Symmetric 231
     with open('Symmetric_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
 
         for file in symmetric231TestFiles:
             #First we read the csv file and initialize rows
@@ -1023,6 +1029,7 @@ def interpretData():
             numColumns = [0]*numRows
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
@@ -1035,19 +1042,21 @@ def interpretData():
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
                 rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
 
             #Next we find the mean of the averages, the minimums, and the maximums
             meanOfAverages = sum(rowAverages)/numRows
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
  
     #Path 231
     with open('Path_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
 
         for file in path231TestFiles:
             #First we read the csv file and initialize rows
@@ -1065,6 +1074,7 @@ def interpretData():
             numColumns = [0]*numRows
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
@@ -1077,12 +1087,14 @@ def interpretData():
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
                 rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
 
             #Next we find the mean of the averages, the minimums, and the maximums
             meanOfAverages = sum(rowAverages)/numRows
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
  
