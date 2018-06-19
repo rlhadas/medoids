@@ -921,7 +921,7 @@ def interpretData():
     #Symmetric 111
     with open('Symmetric_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev', 'Average # of Columns'])
 
         for file in symmetric111TestFiles:
             #First we read the csv file and initialize rows
@@ -959,14 +959,15 @@ def interpretData():
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
             meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
  
     #Path 111
     with open('Path_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns'])
 
         for file in path111TestFiles:
             #First we read the csv file and initialize rows
@@ -1004,14 +1005,15 @@ def interpretData():
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
             meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
 
     #Symmetric 231
     with open('Symmetric_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev', 'Average # of Columns'])
 
         for file in symmetric231TestFiles:
             #First we read the csv file and initialize rows
@@ -1049,14 +1051,15 @@ def interpretData():
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
             meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
  
     #Path 231
     with open('Path_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns'])
 
         for file in path231TestFiles:
             #First we read the csv file and initialize rows
@@ -1094,7 +1097,7 @@ def interpretData():
             meanOfMinimums = sum(rowMinimums)/numRows
             meanOfMaximums = sum(rowMaximums)/numRows
             meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs])
- 
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
