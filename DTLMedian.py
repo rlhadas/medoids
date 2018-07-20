@@ -1,5 +1,6 @@
 # DTLMedian.py
 # Written July 2017 by Andrew Ramirez and Eli Zupke
+# Edited July 2018 by Ramya Ramalingam and Kalani Duran ;^)
 # Utilizes previous code to find the "median" reconciliation of a pair of gene and species trees
 # and other related information
 
