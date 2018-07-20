@@ -1,5 +1,7 @@
 ﻿# First, we put all the functions that are used to find frequency (number of reconciliations involved) in any given node (event or mapping). To do this, we have three functions in total
 
+import csv 
+
 def count_mprs(event_node, dtl_recon_graph, counts):
     """
     :param mapping_node: an individual mapping node that maps a node
@@ -423,3 +425,26 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
     n_med_recons = DTLReconGraph.count_mprs_wrapper(best_roots, med_recon_graph)
 
     return med_recon_graph, n_med_recons, best_roots
+
+def readcsv(filename):
+    filename = 'nodeCosts1.csv'
+    
+    fields = []
+    rows = []
+    
+    with open(filename, 'r') as csvfile:
+        csvreader = csvreader(csvfile)
+        fields =csvreader.next()
+
+        for row in csvreader:
+            rows.append(row)
+        
+        print('Total no. of rows: %d'%(csvreader.line_num))
+
+print('Field names are:' + ', '.join(fileed for field in fields))
+
+print('\nFirst 5 rows are:\n')
+for row in rows[:5]:
+    for col in row:
+        print('%10s'%col)
+    print('\n')
