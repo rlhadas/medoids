@@ -795,7 +795,7 @@ def test_event_freq(filename, dup_cost, transfer_cost, loss_cost):
 
     med_recon_graph1,n_med_recons1,best_roots1 = compute_median(graph, event_scores1, postorder_mapping_node_list, best_roots)
 
-    return event_scores, event_scores1, best_roots, graph
+    return event_scores1
 
 
 
@@ -894,9 +894,11 @@ if __name__ == '__main__':
 
 def interpretData():
     """
+    This function goes through all .csv files of the format (filename, event, event, ... , event) per row and 
+    calculates averages based on the data within the files
     :param filename: csv file containing the event frequencies from a TreeLife.newick file
     
-    :return: means of each of averages, minimums, and maximums
+    :return: Four files with the means of each of averages, minimums, maximums, standard deviations, and # of columns
     """
     #First we find all the csv files that we are to interpret
     directories = list(os.walk("."))
@@ -921,16 +923,16 @@ def interpretData():
     #Symmetric 111
     with open('Symmetric_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev', 'Average # of Columns'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
 
         for file in symmetric111TestFiles:
             #First we read the csv file and initialize rows
-            rows = []
+            eventRows = []
             with open(file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 #Now we extract each data row one by one
                 for row in csvreader:
-                    rows.append(row)
+                    eventRows.append(row)           #see comment block below for variable name explanation
                 numRows = (csvreader.line_num)      #Get total number of rows
 
             #Finding the average, minimum, and maximum for each row
@@ -940,14 +942,33 @@ def interpretData():
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
             rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+            
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
-                    rowSums[i] += float(rows[i][j])
+                    rowSums[i] += rows[i][j]
                     numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
                 rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
-
-            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
             
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
@@ -962,21 +983,21 @@ def interpretData():
             meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
  
     #Path 111
     with open('Path_111.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
 
         for file in path111TestFiles:
             #First we read the csv file and initialize rows
-            rows = []
+            eventRows = []
             with open(file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 #Now we extract each data row one by one
                 for row in csvreader:
-                    rows.append(row)
+                    eventRows.append(row)           #see comment block below for variable name explanation
                 numRows = (csvreader.line_num)      #Get total number of rows
 
             #Finding the average, minimum, and maximum for each row
@@ -986,14 +1007,33 @@ def interpretData():
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
             rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
-                    rowSums[i] += float(rows[i][j])
+                    rowSums[i] += rows[i][j]
                     numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
                 rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
-
-            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
             
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
@@ -1008,21 +1048,21 @@ def interpretData():
             meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
 
     #Symmetric 231
     with open('Symmetric_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev', 'Average # of Columns'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
 
         for file in symmetric231TestFiles:
             #First we read the csv file and initialize rows
-            rows = []
+            eventRows = []
             with open(file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 #Now we extract each data row one by one
                 for row in csvreader:
-                    rows.append(row)
+                    eventRows.append(row)           #see comment block below for variable name explanation
                 numRows = (csvreader.line_num)      #Get total number of rows
 
             #Finding the average, minimum, and maximum for each row
@@ -1032,14 +1072,33 @@ def interpretData():
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
             rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
-                    rowSums[i] += float(rows[i][j])
+                    rowSums[i] += rows[i][j]
                     numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
                 rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
-
-            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
             
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
@@ -1054,21 +1113,21 @@ def interpretData():
             meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
  
     #Path 231
     with open('Path_231.csv', 'a') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns'])
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
 
         for file in path231TestFiles:
             #First we read the csv file and initialize rows
-            rows = []
+            eventRows = []
             with open(file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 #Now we extract each data row one by one
                 for row in csvreader:
-                    rows.append(row)
+                    eventRows.append(row)           #see comment block below for variable name explanation
                 numRows = (csvreader.line_num)      #Get total number of rows
 
             #Finding the average, minimum, and maximum for each row
@@ -1078,14 +1137,33 @@ def interpretData():
             rowMinimums = [None]*numRows
             rowMaximums = [None]*numRows
             rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+
             for i in range(len(rows)):
                 #parsing each column of a row to sum column values and count how many columns per row
                 for j in range(len(rows[i])):
-                    rowSums[i] += float(rows[i][j])
+                    rowSums[i] += rows[i][j]
                     numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
                 rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
-
-            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
             
             for i in range(len(rows)):
                 rowMinimums[i] = min(rows[i])
@@ -1100,4 +1178,275 @@ def interpretData():
             meanColumns = sum(numColumns)/numRows
             
             #write to the output csv file
-            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns])
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
+
+
+def interpretReconData():
+    """
+    This function goes through all .csv files of the format (filename, event, event, ... , event) per row and 
+    calculates averages based on the data within the files
+    :param filename: csv file containing the event frequencies from a TreeLife.newick file
+    
+    :return: Four files with the means of each of averages, minimums, maximums, standard deviations, and # of columns
+    """
+    #First we find all the csv files that we are to interpret
+    directories = list(os.walk("."))
+    textfilesWithPaths = list()
+
+    #find all text files with their paths prepended
+    textfilesWithPaths = list()
+    for item in directories:
+        if item[0][0:2] == "./":
+            path = item
+            files = [item[0] + "/" + file for file in item[2]]
+            textfilesWithPaths.extend(files)
+    
+    #only take files ending in "***_*.csv"
+    recon111TestFiles = list(filter(lambda x: x[-13:] == '111_recon.csv', textfilesWithPaths))
+    recon231TestFiles = list(filter(lambda x: x[-13:] == '231_recon.csv', textfilesWithPaths))
+    
+
+    #111 Recon
+    with open('Recon_111.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
+
+        for file in recon111TestFiles:
+            #First we read the csv file and initialize rows
+            eventRows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    eventRows.append(row)           #see comment block below for variable name explanation
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += rows[i][j]
+                    numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
+
+    #231 Recon
+    with open('Recon_231.csv', 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Mean','Average Minimum','Average Maximum','Average S. Dev','Average # of Columns','Fully Supported Events'])
+
+        for file in recon231TestFiles:
+            #First we read the csv file and initialize rows
+            eventRows = []
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                #Now we extract each data row one by one
+                for row in csvreader:
+                    eventRows.append(row)           #see comment block below for variable name explanation
+                numRows = (csvreader.line_num)      #Get total number of rows
+
+            #Finding the average, minimum, and maximum for each row
+            rowAverages = []
+            rowSums = [0]*numRows
+            numColumns = [0]*numRows
+            rowMinimums = [None]*numRows
+            rowMaximums = [None]*numRows
+            rowSDevs = [None]*numRows
+            fullEvents = 0
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'rows = eventRows' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            rows = []
+            for i in range(len(eventRows)):
+                rows.append([])
+                for j in range(len(eventRows[i])):
+                    if j%2 == 0:
+                        continue
+                    else:
+                        rows[i].append(eventRows[i][j])
+
+            #rows = eventRows
+
+            rows = [[float(col) for col in row] for row in rows]        #turn each string value into a float
+
+            for i in range(len(rows)):
+                #parsing each column of a row to sum column values and count how many columns per row
+                for j in range(len(rows[i])):
+                    rowSums[i] += rows[i][j]
+                    numColumns[i] += 1
+                    if i == 0:                                  #this is to only count the fullEvents in one sample
+                        if rows[i][j] > 0.999999:               #this accounts for rounding or arithmetic errors
+                            fullEvents += 1
+                rowAverages.append(rowSums[i]/numColumns[i])    #Calculate average
+            
+            for i in range(len(rows)):
+                rowMinimums[i] = min(rows[i])
+                rowMaximums[i] = max(rows[i])
+                rowSDevs[i] = np.std(rows[i],ddof=1)        #ddof is 1 because we're calculating a sample sdev
+
+            #Next we find the mean of the averages, the minimums, and the maximums
+            meanOfAverages = sum(rowAverages)/numRows
+            meanOfMinimums = sum(rowMinimums)/numRows
+            meanOfMaximums = sum(rowMaximums)/numRows
+            meanOfSDevs = sum(rowSDevs)/numRows
+            meanColumns = sum(numColumns)/numRows
+            
+            #write to the output csv file
+            filewriter.writerow([file, meanOfAverages, meanOfMinimums, meanOfMaximums, meanOfSDevs, meanColumns, fullEvents])
+
+
+def avgThresholdFreq(threshold,methodCost):
+    """
+    Calculates the percentage of files with an average frequency with support of (threshold) or less
+    :param threshold: maximum event frequency for calculations
+    :param methodCost: string of method used and event costs, i.e. s111 or p231
+    :return: percentage of files with their average frequency support at or under threshold support
+    """
+    #first we dtermine the file to be opened
+    if methodCost[0] == "s":
+        fileName = "Symmetric_" + methodCost[1:] + ".csv"
+    else:
+        fileName = "Path_" + methodCost[1:] + ".csv"
+    
+    #Read the file
+    rows = []
+    with open(fileName, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        #Now we extract each data row one by one
+        for row in csvreader:
+            rows.append(row)
+        numRows = (csvreader.line_num) - 1     #Get total number of rows, minus label row
+    
+    #count how many rows are under threshold
+    rowsUnderThreshold = 0
+    for i in range(1,len(rows)):            #ignoring label row
+        #print(rows[i][1])                  #debugging
+        if float(rows[i][1]) <= threshold:
+            rowsUnderThreshold += 1
+    
+    percentUnder = float(rowsUnderThreshold)/numRows
+
+    return percentUnder
+
+def deepThresholdFreq(threshold,methodCost):
+    """
+    Calculates the percentage of frequencies with support of (threshold) or less per file, then computes the average
+    :param threshold: maximum event frequency for calculations
+    :param methodCost: string of method used and event costs, i.e. s111 or p231
+    :return: average percentage of (frequencies with their support at or under threshold support, calculate per file)
+    """
+    #First we find all the csv files that we are to interpret
+    directories = list(os.walk("."))
+    textfilesWithPaths = list()
+
+    #find all text files with their paths prepended
+    textfilesWithPaths = list()
+    for item in directories:
+        if item[0][0:2] == "./":
+            path = item
+            files = [item[0] + "/" + file for file in item[2]]
+            textfilesWithPaths.extend(files)
+    
+    #determine the files to use based on methodCost parameter
+    if methodCost == "s111":
+        textFiles = list(filter(lambda x: x[-9:] == '111_s.csv', textfilesWithPaths))
+        fileName  = "Symmetric_111_" + str(threshold) + ".csv"
+    elif methodCost == "p111":
+        textFiles = list(filter(lambda x: x[-9:] == '111_p.csv', textfilesWithPaths))
+        fileName  = "Path_111_" + str(threshold) + ".csv"
+    elif methodCost == "r111":
+        textFiles = list(filter(lambda x: x[-13:] == '111_recon.csv', textfilesWithPaths))
+        fileName  = "Recon_111_" + str(threshold) + ".csv"
+    elif methodCost == "s231":
+        textFiles = list(filter(lambda x: x[-9:] == '231_s.csv', textfilesWithPaths))
+        fileName  = "Symmetric_231_" + str(threshold) + ".csv"
+    elif methodCost == "p231":
+        textFiles = list(filter(lambda x: x[-9:] == '231_p.csv', textfilesWithPaths))
+        fileName  = "Path_231_" + str(threshold) + ".csv"
+    elif methodCost == "r231":
+        textFiles = list(filter(lambda x: x[-13:] == '231_recon.csv', textfilesWithPaths))
+        fileName  = "Recon_231_" + str(threshold) + ".csv"
+
+
+    #Calculate percentage per file of frequencies under threshold value 
+    numFiles = len(textFiles)
+    filePercentages = [] 
+    with open(fileName, 'a') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['File Name','Average Frac of Events with Support <=' + str(threshold)])
+
+        for file in textFiles:
+            #First we read the csv file and initialize only the first row
+            with open(file, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                firstEventRow = next(csvreader)
+
+            #this next block is for csv files that alternate between type of event and the frequency of said event
+            #the commented out line 'firstRow = firstEventRow' is for csv files that are just event frequencies
+            #if that is the case, comment out the block below and uncomment said line.
+            firstRow = []
+            for i in range(len(firstEventRow)):
+                if i%2 == 0:
+                    continue
+                else:
+                    firstRow.append(firstEventRow[i])
+
+            #firstRow = firstEventRow
+
+
+            #Finding how many frequencies have support value under the threshold
+            underThreshold = 0
+            firstRow = [float(col) for col in firstRow]         #turn each string value into a float
+            numEvents = len(firstRow)
+            for i in range(numEvents):             
+                #print(firstRow[i])                     #debugging
+                if firstRow[i] <= threshold:
+                    underThreshold += 1
+           
+            #Find percentage that these under threshold frequencies represent
+            percentUnder = float(underThreshold)/len(firstRow)
+            filewriter.writerow([file,percentUnder])
+
+        
